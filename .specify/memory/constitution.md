@@ -1,15 +1,13 @@
 <!--
 Sync Impact Report:
-- Version change: 1.0.0 → 1.1.0
-- Modified principles: 
-  * Principle I: Added better-sqlite3 to core dependencies
-  * Principle II: Added client-side SQLite WASM exception for local data
-- Added sections: Data Persistence (new principle VI)
-- Removed sections: None
+- Version change: Template → 1.0.0
+- Modified principles: All new (initial constitution)
+- Added sections: Core Principles (5), Technology Stack, Development Workflow, Governance
+- Removed sections: None (initial creation)
 - Templates requiring updates:
   ✅ plan-template.md (Constitution Check section verified)
-  ✅ spec-template.md (aligned with data persistence principles)
-  ✅ tasks-template.md (aligned with migration management approach)
+  ✅ spec-template.md (aligned with simplicity principles)
+  ✅ tasks-template.md (aligned with testing optional approach)
 - Follow-up TODOs: None
 -->
 
@@ -19,15 +17,15 @@ Sync Impact Report:
 
 ### I. Minimal Dependencies
 
-Every feature MUST minimize external dependencies to reduce maintenance burden and security surface area. Core dependencies are limited to: React, Next.js, Tailwind CSS, better-sqlite3 (for local data persistence). New dependencies require explicit justification demonstrating that native/built-in solutions are insufficient.
+Every feature MUST minimize external dependencies to reduce maintenance burden and security surface area. Core dependencies are limited to: React, Next.js, Tailwind CSS. New dependencies require explicit justification demonstrating that native/built-in solutions are insufficient.
 
-**Rationale**: Fewer dependencies mean fewer breaking changes, security vulnerabilities, and maintenance overhead. Static web apps should leverage browser capabilities and framework features before adding third-party code. SQLite provides local-first data without external services.
+**Rationale**: Fewer dependencies mean fewer breaking changes, security vulnerabilities, and maintenance overhead. Static web apps should leverage browser capabilities and framework features before adding third-party code.
 
 ### II. Static-First Architecture
 
-All pages MUST be statically generated at build time unless dynamic rendering is explicitly required and justified. API routes are permitted only for server-side operations that cannot be static. Client-side data fetching should use native fetch or framework utilities. Client-side SQLite using WASM is permitted for local-first data storage without server runtime.
+All pages MUST be statically generated at build time unless dynamic rendering is explicitly required and justified. API routes are permitted only for server-side operations that cannot be static. Client-side data fetching should use native fetch or framework utilities.
 
-**Rationale**: Static generation provides maximum performance, reliability, and deployment flexibility. Pre-rendered HTML requires no server runtime and deploys anywhere (CDN, object storage, static hosts). Client-side SQLite maintains static-first principles while enabling local data persistence.
+**Rationale**: Static generation provides maximum performance, reliability, and deployment flexibility. Pre-rendered HTML requires no server runtime and deploys anywhere (CDN, object storage, static hosts).
 
 ### III. Component Modularity
 
@@ -47,30 +45,17 @@ Build times MUST remain under 60 seconds for full production builds. New feature
 
 **Rationale**: Fast builds enable rapid iteration and CI/CD efficiency. Minimal JavaScript improves page load performance and user experience.
 
-### VI. Data Persistence
-
-SQLite database file MUST be stored in the repository at `data/app.db` (tracked in git) for local-first data management. Database is intended for personal/local use with modest data volumes (<100MB). Schema migrations MUST use a migration tool (better-sqlite3-migrations or similar) with migration files in `data/migrations/`. All schema changes require migration files, never manual SQL.
-
-**Rationale**: Repository-stored database ensures version control, easy backup/restore, and zero external dependencies. Migration tool provides repeatable schema evolution and rollback capability. Size constraint keeps repository manageable and build/clone times acceptable.
-
 ## Technology Stack
 
 **Framework**: Next.js 16+ (App Router)  
 **Language**: TypeScript 5+ (strict mode)  
 **Styling**: Tailwind CSS 4+ (PostCSS)  
-**Database**: SQLite 3+ via better-sqlite3 (local-first, client-side WASM)  
-**Migrations**: Migration tool required (e.g., better-sqlite3-migrations, knex)  
 **Runtime**: Node.js 20+ for development and build  
 **Testing**: Optional - only add when explicitly required by feature specs  
 **Package Manager**: npm (as evidenced by package-lock.json)
+**Database**: SQLite
 
 All dependencies MUST remain at latest stable versions. Security updates applied within 7 days of release.
-
-**Database Constraints**:
-- Database file location: `data/app.db` (tracked in repository)
-- Maximum database size: 100MB (enforced via pre-commit hook)
-- Migration files: `data/migrations/*.sql` or `*.js`
-- Schema changes: Migration tool only, no manual SQL execution
 
 ## Development Workflow
 
@@ -94,7 +79,6 @@ All dependencies MUST remain at latest stable versions. Security updates applied
 - All deployments use static export (`next build`)
 - Output directory (`out/`) contains only static assets
 - No server runtime dependencies in production
-- SQLite database file (`data/app.db`) deployed alongside static assets for client-side WASM access
 
 ## Governance
 
@@ -115,4 +99,4 @@ This constitution supersedes all other development practices and guidelines. All
 - Implementation plans include constitution check section
 - Pre-merge reviews verify constitutional compliance
 
-**Version**: 1.1.0 | **Ratified**: 2025-11-10 | **Last Amended**: 2025-11-10
+**Version**: 1.0.0 | **Ratified**: 2025-11-10 | **Last Amended**: 2025-11-10
