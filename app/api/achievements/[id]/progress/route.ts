@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateSession } from '@/lib/auth/session';
 import { execute, queryOne } from '@/lib/db/client';
-import { handleApiError, AuthenticationError, NotFoundError } from '@/lib/utils/errors';
+import { handleApiError, AuthenticationError, AuthorizationError, NotFoundError } from '@/lib/utils/errors';
 import { z } from 'zod';
 import type { AchievementProgress } from '@/types/achievement';
 
 const progressUpdateSchema = z.object({
   progress_percentage: z.number().int().min(0).max(100),
+  employee_id: z.number().int().positive().optional(), // For admin/HR to update other employees
 });
 
 export async function PATCH(
@@ -25,8 +26,16 @@ export async function PATCH(
       throw new AuthenticationError('Invalid or expired session');
     }
 
+    // Only Admin/HR can update progress
+    if (employee.role !== 'admin' && employee.role !== 'hr') {
+      throw new AuthorizationError('Only Admin or HR can update achievement progress');
+    }
+
     const body = await request.json();
     const validatedData = progressUpdateSchema.parse(body);
+
+    // Determine which employee's progress to update
+    const targetEmployeeId = validatedData.employee_id || employee.id;
 
     // Check if achievement exists
     const achievement = queryOne(
@@ -41,7 +50,7 @@ export async function PATCH(
     // Check if progress record exists
     const existingProgress = queryOne<AchievementProgress>(
       'SELECT * FROM achievement_progress WHERE employee_id = ? AND achievement_id = ?',
-      [employee.id, id]
+      [targetEmployeeId, id]
     );
 
     if (existingProgress) {
@@ -54,8 +63,8 @@ export async function PATCH(
          WHERE employee_id = ? AND achievement_id = ?`,
         [
           validatedData.progress_percentage,
-          validatedData.progress_percentage === 100 ? 'completed' : 'in_progress',
-          employee.id,
+          validatedData.progress_percentage === 100 ? 'completed' : 'on_doing',
+          targetEmployeeId,
           id,
         ]
       );
@@ -65,10 +74,10 @@ export async function PATCH(
         `INSERT INTO achievement_progress (employee_id, achievement_id, progress_percentage, status) 
          VALUES (?, ?, ?, ?)`,
         [
-          employee.id,
+          targetEmployeeId,
           id,
           validatedData.progress_percentage,
-          validatedData.progress_percentage === 100 ? 'completed' : 'in_progress',
+          validatedData.progress_percentage === 100 ? 'completed' : 'on_doing',
         ]
       );
     }
@@ -76,12 +85,13 @@ export async function PATCH(
     // Fetch updated progress
     const updatedProgress = queryOne<AchievementProgress>(
       'SELECT * FROM achievement_progress WHERE employee_id = ? AND achievement_id = ?',
-      [employee.id, id]
+      [targetEmployeeId, id]
     );
 
     return NextResponse.json({
       success: true,
       data: updatedProgress,
+      message: 'Progress updated successfully',
     });
   } catch (error) {
     return handleApiError(error);

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
+import { Card, CardHeader, CardTitle, CardContent, ConfirmDialog } from '@/components/ui';
 import { AchievementForm } from '@/components/achievements/AchievementForm';
 import { AchievementList } from '@/components/achievements/AchievementList';
+import { toast } from '@/lib/utils/toast';
 import type { AchievementWithStatus, Achievement } from '@/types/achievement';
 
 export default function AdminAchievementsPage() {
@@ -12,6 +13,7 @@ export default function AdminAchievementsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number | null }>({ show: false, id: null });
 
   const fetchAchievements = async () => {
     try {
@@ -48,25 +50,30 @@ export default function AdminAchievementsPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this achievement?')) {
-      return;
-    }
+  const handleDelete = (id: number) => {
+    setDeleteConfirm({ show: true, id });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.id) return;
 
     try {
-      const response = await fetch(`/api/achievements/${id}`, {
+      const response = await fetch(`/api/achievements/${deleteConfirm.id}`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       if (response.ok) {
+        toast.success('Achievement deleted successfully');
         fetchAchievements();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete achievement');
+        toast.error(data.error || 'Failed to delete achievement');
       }
     } catch (error) {
-      alert('Network error');
+      toast.error('Network error');
+    } finally {
+      setDeleteConfirm({ show: false, id: null });
     }
   };
 
@@ -136,6 +143,17 @@ export default function AdminAchievementsPage() {
           onDelete={handleDelete}
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.show}
+        title="Delete Achievement"
+        message="Are you sure you want to delete this achievement? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteConfirm({ show: false, id: null })}
+      />
     </div>
   );
 }

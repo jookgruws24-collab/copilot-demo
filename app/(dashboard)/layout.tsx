@@ -168,9 +168,9 @@ export default function DashboardLayout({
             {/* User Menu */}
             <div className="flex items-center space-x-4">
               {/* Diamond Balance */}
-              <div className="hidden sm:flex items-center px-3 py-1 bg-yellow-50 border border-yellow-200 rounded-full">
-                <span className="text-yellow-600 font-semibold">💎</span>
-                <span className="ml-2 text-sm font-medium text-gray-900">
+              <div className="hidden sm:flex items-center px-3 py-1 bg-yellow-50 border border-yellow-200 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-md">
+                <span className="text-yellow-600 font-semibold animate-pulse">💎</span>
+                <span className="ml-2 text-sm font-medium text-gray-900 transition-all duration-500">
                   {employee?.diamond_balance || 0}
                 </span>
               </div>

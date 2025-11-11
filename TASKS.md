@@ -161,20 +161,20 @@
 
 ### Implementation for User Story 4
 
-- [ ] T071 [P] [US4] Create Product TypeScript types in types/product.ts
-- [ ] T072 [P] [US4] Create Purchase TypeScript types in types/purchase.ts
-- [ ] T073 [US4] Implement GET /api/products endpoint to list available products in app/api/products/route.ts
-- [ ] T074 [US4] Implement POST /api/products endpoint for Admin to add products in app/api/products/route.ts
-- [ ] T075 [US4] Implement POST /api/purchases endpoint with transaction in app/api/purchases/route.ts
-- [ ] T076 [US4] Create atomic transaction for purchase (check balance, deduct diamonds, decrement inventory, create purchase, insert history) in lib/purchases/create.ts
-- [ ] T077 [US4] Create ProductCard component with price and availability in app/components/store/ProductCard.tsx
-- [ ] T078 [US4] Create ProductGrid component in app/components/store/ProductGrid.tsx
-- [ ] T079 [US4] Create PurchaseButton component with balance validation in app/components/store/PurchaseButton.tsx
-- [ ] T080 [US4] Create DiamondBalance component to display current balance in app/components/store/DiamondBalance.tsx
-- [ ] T081 [US4] Create product store page in app/(dashboard)/store/page.tsx
-- [ ] T082 [US4] Add validation to prevent purchases with insufficient balance
-- [ ] T083 [US4] Add validation to prevent purchases when quantity is 0
-- [ ] T084 [US4] Show out-of-stock badge on unavailable products
+- [x] T071 [P] [US4] Create Product TypeScript types in types/product.ts
+- [x] T072 [P] [US4] Create Purchase TypeScript types in types/purchase.ts
+- [x] T073 [US4] Implement GET /api/products endpoint to list available products in app/api/products/route.ts
+- [x] T074 [US4] Implement POST /api/products endpoint for Admin to add products in app/api/products/route.ts
+- [x] T075 [US4] Implement POST /api/purchases endpoint with transaction in app/api/purchases/route.ts
+- [x] T076 [US4] Create atomic transaction for purchase (check balance, deduct diamonds, decrement inventory, create purchase, insert history) in lib/purchases/create.ts
+- [x] T077 [US4] Create ProductCard component with price and availability in app/components/store/ProductCard.tsx
+- [x] T078 [US4] Create ProductGrid component in app/components/store/ProductGrid.tsx
+- [x] T079 [US4] Create PurchaseButton component with balance validation in app/components/store/PurchaseButton.tsx
+- [x] T080 [US4] Create DiamondBalance component to display current balance in app/components/store/DiamondBalance.tsx
+- [x] T081 [US4] Create product store page in app/(dashboard)/store/page.tsx
+- [x] T082 [US4] Add validation to prevent purchases with insufficient balance
+- [x] T083 [US4] Add validation to prevent purchases when quantity is 0
+- [x] T084 [US4] Show out-of-stock badge on unavailable products
 
 **Checkpoint**: At this point, employees can browse and purchase products, with proper balance and inventory validation
 
@@ -188,16 +188,16 @@
 
 ### Implementation for User Story 5
 
-- [ ] T085 [US5] Implement GET /api/purchases/pending endpoint for Admin in app/api/purchases/pending/route.ts
-- [ ] T086 [US5] Implement PATCH /api/purchases/[id]/approve endpoint with transaction in app/api/purchases/[id]/approve/route.ts
-- [ ] T087 [US5] Implement PATCH /api/purchases/[id]/reject endpoint with refund transaction in app/api/purchases/[id]/reject/route.ts
-- [ ] T088 [US5] Create atomic transaction for rejection (refund balance, update status, insert history) in lib/purchases/reject.ts
-- [ ] T089 [US5] Add validation to prevent duplicate approvals (check current status)
-- [ ] T090 [US5] Create PurchaseCard component with employee and product details in app/components/approvals/PurchaseCard.tsx
-- [ ] T091 [US5] Create ApprovalActions component (Approve/Reject buttons) in app/components/approvals/ApprovalActions.tsx
-- [ ] T092 [US5] Create RejectionModal component for entering reason in app/components/approvals/RejectionModal.tsx
-- [ ] T093 [US5] Create purchase approvals page in app/(dashboard)/admin/approvals/page.tsx
-- [ ] T094 [US5] Add notification logic for approval/rejection (can be in-app alert or placeholder)
+- [x] T085 [US5] Implement GET /api/purchases/pending endpoint for Admin in app/api/purchases/pending/route.ts
+- [x] T086 [US5] Implement PATCH /api/purchases/[id]/approve endpoint with transaction in app/api/purchases/[id]/approve/route.ts
+- [x] T087 [US5] Implement PATCH /api/purchases/[id]/reject endpoint with refund transaction in app/api/purchases/[id]/reject/route.ts
+- [x] T088 [US5] Create atomic transaction for rejection (refund balance, update status, insert history) in lib/purchases/reject.ts
+- [x] T089 [US5] Add validation to prevent duplicate approvals (check current status)
+- [x] T090 [US5] Create PurchaseCard component with employee and product details in app/components/approvals/PurchaseCard.tsx
+- [x] T091 [US5] Create ApprovalActions component (Approve/Reject buttons) in app/components/approvals/ApprovalActions.tsx
+- [x] T092 [US5] Create RejectionModal component for entering reason in app/components/approvals/RejectionModal.tsx
+- [x] T093 [US5] Create purchase approvals page in app/(dashboard)/admin/approvals/page.tsx
+- [x] T094 [US5] Add notification logic for approval/rejection (can be in-app alert or placeholder)
 
 **Checkpoint**: At this point, Admin can fully manage purchase approvals with proper refund handling and audit trail
 
@@ -211,17 +211,17 @@
 
 ### Implementation for User Story 6
 
-- [ ] T095 [P] [US6] Create History TypeScript types in types/history.ts
-- [ ] T096 [US6] Implement GET /api/history endpoint with role-based filtering in app/api/history/route.ts
-- [ ] T097 [US6] Add query parameter support for filters (date range, employee, type, status) in history endpoint
-- [ ] T098 [US6] Add search functionality (employee_name, details fields) in history endpoint
-- [ ] T099 [US6] Implement pagination for history results (limit/offset) in history endpoint
-- [ ] T100 [US6] Create HistoryTable component with sortable columns in app/components/history/HistoryTable.tsx
-- [ ] T101 [US6] Create HistoryFilters component (date picker, dropdowns, search) in app/components/history/HistoryFilters.tsx
-- [ ] T102 [US6] Create HistoryDetailModal component for detailed view in app/components/history/HistoryDetailModal.tsx
-- [ ] T103 [US6] Create history page with role-based content in app/(dashboard)/history/page.tsx
-- [ ] T104 [US6] Add role check: User role sees only own history, Admin/HR see all
-- [ ] T105 [US6] Optimize history query with proper indexes for <2s performance (10k records)
+- [x] T095 [P] [US6] Create History TypeScript types in types/history.ts
+- [x] T096 [US6] Implement GET /api/history endpoint with role-based filtering in app/api/history/route.ts
+- [x] T097 [US6] Add query parameter support for filters (date range, employee, type, status) in history endpoint
+- [x] T098 [US6] Add search functionality (employee_name, details fields) in history endpoint
+- [x] T099 [US6] Implement pagination for history results (limit/offset) in history endpoint
+- [x] T100 [US6] Create HistoryTable component with sortable columns in app/components/history/HistoryTable.tsx
+- [x] T101 [US6] Create HistoryFilters component (date picker, dropdowns, search) in app/components/history/HistoryFilters.tsx
+- [x] T102 [US6] Create HistoryDetailModal component for detailed view in app/components/history/HistoryDetailModal.tsx
+- [x] T103 [US6] Create history page with role-based content in app/(dashboard)/history/page.tsx
+- [x] T104 [US6] Add role check: User role sees only own history, Admin/HR see all
+- [x] T105 [US6] Optimize history query with proper indexes for <2s performance (10k records)
 
 **Checkpoint**: At this point, all history is tracked, searchable, and filterable with proper role-based access
 
@@ -231,18 +231,18 @@
 
 **Purpose**: Improvements that affect multiple user stories and final validation
 
-- [ ] T106 [P] Add loading states to all async components
-- [ ] T107 [P] Add error boundaries for graceful error handling in app/error.tsx
-- [ ] T108 [P] Improve mobile responsiveness across all pages
-- [ ] T109 [P] Add toast notifications for success/error feedback in lib/utils/toast.ts
-- [ ] T110 Add animation for diamond balance updates
-- [ ] T111 Add confirmation dialogs for destructive actions (delete achievement, reject purchase)
-- [ ] T112 [P] Create QUICKSTART.md with setup instructions, seed data, and testing guide
-- [ ] T113 [P] Update README.md with feature overview and architecture
-- [ ] T114 Verify all success criteria (SC-001 to SC-012) are met
-- [ ] T115 Run seed script and validate all user stories end-to-end
-- [ ] T116 Performance audit: Verify page loads <2s, queries <100ms
-- [ ] T117 Security audit: Verify 100% role-based access control enforcement
+- [x] T106 [P] Add loading states to all async components
+- [x] T107 [P] Add error boundaries for graceful error handling in app/error.tsx
+- [x] T108 [P] Improve mobile responsiveness across all pages
+- [x] T109 [P] Add toast notifications for success/error feedback in lib/utils/toast.ts
+- [x] T110 Add animation for diamond balance updates
+- [x] T111 Add confirmation dialogs for destructive actions (delete achievement, reject purchase)
+- [x] T112 [P] Create QUICKSTART.md with setup instructions, seed data, and testing guide
+- [x] T113 [P] Update README.md with feature overview and architecture
+- [x] T114 Verify all success criteria (SC-001 to SC-012) are met
+- [x] T115 Run seed script and validate all user stories end-to-end
+- [x] T116 Performance audit: Verify page loads <2s, queries <100ms
+- [x] T117 Security audit: Verify 100% role-based access control enforcement
 
 ---
 

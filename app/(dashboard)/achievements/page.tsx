@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { AchievementStatusBadge } from '@/components/achievements/StatusBadge';
 import { ProgressBar } from '@/components/achievements/ProgressBar';
 import { ClaimButton } from '@/components/achievements/ClaimButton';
+import { ProgressInput } from '@/components/achievements/ProgressInput';
 import { groupByStatus } from '@/lib/achievements/status';
 import type { AchievementWithStatus, AchievementProgress } from '@/types/achievement';
 import type { Employee } from '@/types/employee';
@@ -80,9 +81,25 @@ export default function AchievementsPage() {
     fetchData(); // Refresh data
   };
 
+  const handleProgressUpdate = (achievementId: number, newProgress: number) => {
+    // Update local progress state
+    const updatedProgress = new Map(progress);
+    const current = updatedProgress.get(achievementId);
+    if (current) {
+      updatedProgress.set(achievementId, {
+        ...current,
+        progress_percentage: newProgress,
+        status: newProgress === 100 ? 'completed' : 'on_doing',
+      });
+      setProgress(updatedProgress);
+    }
+  };
+
   const renderAchievementWithProgress = (achievement: AchievementWithStatus) => {
     const prog = progress.get(achievement.id);
-    const canClaim = prog?.status === 'completed' && achievement.status === 'ongoing';
+    const isClaimed = prog?.status === 'claimed';
+    const canClaim = prog?.progress_percentage === 100 && prog?.status === 'completed' && achievement.status === 'ongoing';
+    const isAdminOrHR = employee?.role === 'admin' || employee?.role === 'hr';
 
     return (
       <Card key={achievement.id} className="hover:shadow-lg transition-shadow">
@@ -122,10 +139,27 @@ export default function AchievementsPage() {
                 color={prog.progress_percentage === 100 ? 'green' : 'blue'}
               />
               
-              {prog.status === 'claimed' && (
+              {isClaimed && (
                 <div className="flex items-center gap-2 text-green-600 font-medium">
                   <span className="text-xl">✓</span>
                   <span>Claimed on {new Date(prog.claimed_at || '').toLocaleDateString()}</span>
+                </div>
+              )}
+
+              {/* Only Admin/HR can update progress */}
+              {!isClaimed && achievement.status === 'ongoing' && isAdminOrHR && (
+                <ProgressInput
+                  achievementId={achievement.id}
+                  currentProgress={prog.progress_percentage}
+                  onUpdate={(newProgress) => handleProgressUpdate(achievement.id, newProgress)}
+                  disabled={isClaimed}
+                />
+              )}
+
+              {/* Regular users can only view progress and claim */}
+              {!isClaimed && achievement.status === 'ongoing' && !isAdminOrHR && (
+                <div className="text-sm text-gray-500 italic">
+                  Progress is managed by Admin/HR. Current: {prog.progress_percentage}%
                 </div>
               )}
 
@@ -140,8 +174,35 @@ export default function AchievementsPage() {
           )}
 
           {!prog && achievement.status === 'ongoing' && (
-            <div className="mt-4">
-              <p className="text-sm text-gray-500 italic">Not started yet</p>
+            <div className="mt-4 space-y-3">
+              {isAdminOrHR ? (
+                <>
+                  <p className="text-sm text-gray-500 italic mb-3">Not started yet - Set progress below:</p>
+                  <ProgressInput
+                    achievementId={achievement.id}
+                    currentProgress={0}
+                    onUpdate={(newProgress) => {
+                      // Create new progress entry
+                      const updatedProgress = new Map(progress);
+                      updatedProgress.set(achievement.id, {
+                        id: 0,
+                        employee_id: employee!.id,
+                        achievement_id: achievement.id,
+                        progress_percentage: newProgress,
+                        status: newProgress === 100 ? 'completed' : 'on_doing',
+                        claimed_at: null,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString(),
+                      });
+                      setProgress(updatedProgress);
+                    }}
+                  />
+                </>
+              ) : (
+                <div className="text-sm text-gray-500 italic">
+                  No progress recorded yet. Progress is managed by Admin/HR.
+                </div>
+              )}
             </div>
           )}
         </CardContent>

@@ -39,7 +39,7 @@ export interface AchievementProgress {
   employee_id: number;
   achievement_id: number;
   progress_percentage: number;
-  status: 'not_started' | 'in_progress' | 'completed' | 'claimed';
+  status: 'upcoming' | 'on_doing' | 'completed' | 'claimed';
   claimed_at?: string | null;
   created_at: string;
   updated_at: string;

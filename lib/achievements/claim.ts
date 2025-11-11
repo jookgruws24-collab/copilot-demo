@@ -75,12 +75,19 @@ export function claimAchievementReward(
       [claimedAt, employeeId, achievementId]
     );
 
+    // Get employee name for history
+    const employeeName = queryOne<{ name: string }>(
+      'SELECT name FROM employees WHERE id = ?',
+      [employeeId]
+    )?.name || 'Unknown';
+
     // Insert history record
     execute(
-      `INSERT INTO history (employee_id, type, action, details, diamonds_change) 
-       VALUES (?, 'claim', 'claimed', ?, ?)`,
+      `INSERT INTO history (employee_id, employee_name, type, action, details, diamonds) 
+       VALUES (?, ?, 'claim', 'claimed', ?, ?)`,
       [
         employeeId,
+        employeeName,
         JSON.stringify({
           achievement_id: achievementId,
           achievement_title: achievement.title,

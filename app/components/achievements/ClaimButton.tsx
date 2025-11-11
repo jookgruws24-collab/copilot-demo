@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui';
+import { toast } from '@/lib/utils/toast';
 
 interface ClaimButtonProps {
   achievementId: number;
@@ -34,15 +35,17 @@ export function ClaimButton({ achievementId, canClaim, onSuccess, disabled }: Cl
         // Trigger animation
         setTimeout(() => setAnimating(false), 1000);
         
+        toast.success(`🎉 Reward claimed! +${data.data?.diamondsAwarded || 0}💎`);
+        
         // Call success callback with new balance
         if (onSuccess && data.data?.newBalance) {
           onSuccess(data.data.newBalance);
         }
       } else {
-        alert(data.error || 'Failed to claim reward');
+        toast.error(data.error || 'Failed to claim reward');
       }
     } catch (error) {
-      alert('Network error');
+      toast.error('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
