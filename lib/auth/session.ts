@@ -45,7 +45,7 @@ export function createSession(employeeId: number): Session {
  */
 export function getSessionByToken(token: string): Session | undefined {
   const session = queryOne<Session>(
-    'SELECT * FROM sessions WHERE token = ? AND datetime(expires_at) > datetime("now")',
+    "SELECT * FROM sessions WHERE token = ? AND datetime(expires_at) > datetime('now')",
     [token]
   );
   
@@ -81,7 +81,7 @@ export function deleteAllSessions(employeeId: number): void {
  * Clean up expired sessions
  */
 export function cleanupExpiredSessions(): void {
-  execute('DELETE FROM sessions WHERE expires_at <= datetime("now")');
+  execute("DELETE FROM sessions WHERE expires_at <= datetime('now')");
 }
 
 /**

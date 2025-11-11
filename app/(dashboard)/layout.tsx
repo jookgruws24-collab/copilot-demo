@@ -18,7 +18,9 @@ export default function DashboardLayout({
   useEffect(() => {
     async function fetchEmployee() {
       try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
         if (!response.ok) {
           router.push('/login');
           return;
@@ -38,7 +40,10 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include',
+      });
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);

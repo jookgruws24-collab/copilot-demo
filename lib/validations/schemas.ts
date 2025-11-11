@@ -48,6 +48,10 @@ export const invitationCodeCreateSchema = z.object({
   created_by: z.number().int().positive(),
 });
 
+export const invitationCodeToggleSchema = z.object({
+  is_active: z.boolean(),
+});
+
 export const invitationCodeValidateSchema = z.object({
   code: z.string().length(8, 'Invitation code must be 8 characters'),
 });
@@ -56,13 +60,16 @@ export const invitationCodeValidateSchema = z.object({
 // Achievement Schemas
 // ============================================================================
 export const achievementCreateSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   description: z.string().min(1, 'Description is required'),
   conditions: z.string().min(1, 'Conditions are required'),
   diamond_reward: z.number().int().positive('Diamond reward must be positive'),
-  start_date: z.string().datetime('Invalid start date'),
-  end_date: z.string().datetime('Invalid end date'),
-  created_by: z.number().int().positive(),
+  start_date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid start date',
+  }),
+  end_date: z.string().refine((date) => !isNaN(Date.parse(date)), {
+    message: 'Invalid end date',
+  }),
 }).refine(
   (data) => new Date(data.end_date) > new Date(data.start_date),
   {
@@ -72,12 +79,12 @@ export const achievementCreateSchema = z.object({
 );
 
 export const achievementUpdateSchema = z.object({
-  title: z.string().min(1).optional(),
+  title: z.string().min(1).max(200).optional(),
   description: z.string().min(1).optional(),
   conditions: z.string().min(1).optional(),
   diamond_reward: z.number().int().positive().optional(),
-  start_date: z.string().datetime().optional(),
-  end_date: z.string().datetime().optional(),
+  start_date: z.string().refine((date) => !isNaN(Date.parse(date))).optional(),
+  end_date: z.string().refine((date) => !isNaN(Date.parse(date))).optional(),
 }).refine(
   (data) => {
     if (data.start_date && data.end_date) {

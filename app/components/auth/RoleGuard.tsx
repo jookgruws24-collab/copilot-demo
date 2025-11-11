@@ -18,7 +18,9 @@ export function RoleGuard({ children, allowedRoles, fallback }: RoleGuardProps) 
   useEffect(() => {
     async function checkRole() {
       try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
         if (!response.ok) {
           router.push('/login');
           return;

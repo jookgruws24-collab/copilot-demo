@@ -26,6 +26,7 @@ export function LoginForm() {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -35,7 +36,8 @@ export function LoginForm() {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Login successful, redirect to profile
+      // Login successful, refresh router and redirect to profile
+      router.refresh();
       router.push('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');

@@ -18,7 +18,9 @@ export default function AdminEmployeesPage() {
     try {
       // For now, we'll fetch all employees via auth/me as a placeholder
       // In production, you'd want a dedicated /api/employees endpoint
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include',
+      });
       const data = await response.json();
       
       if (response.ok) {
@@ -37,6 +39,7 @@ export default function AdminEmployeesPage() {
       const response = await fetch(`/api/employees/${employeeId}/role`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ role: newRole }),
       });
 

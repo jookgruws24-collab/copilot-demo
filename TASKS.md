@@ -110,19 +110,19 @@
 
 ### Implementation for User Story 2
 
-- [ ] T046 [P] [US2] Create Achievement TypeScript types in types/achievement.ts
-- [ ] T047 [P] [US2] Create achievement status calculation utility in lib/achievements/status.ts
-- [ ] T048 [US2] Implement GET /api/achievements endpoint to list all achievements in app/api/achievements/route.ts
-- [ ] T049 [US2] Implement POST /api/achievements endpoint for Admin/HR in app/api/achievements/route.ts
-- [ ] T050 [US2] Implement GET /api/achievements/[id] endpoint in app/api/achievements/[id]/route.ts
-- [ ] T051 [US2] Implement PATCH /api/achievements/[id] endpoint for editing in app/api/achievements/[id]/route.ts
-- [ ] T052 [US2] Implement DELETE /api/achievements/[id] endpoint in app/api/achievements/[id]/route.ts
-- [ ] T053 [US2] Create AchievementForm component in app/components/achievements/AchievementForm.tsx
-- [ ] T054 [US2] Create AchievementCard component with status badges in app/components/achievements/AchievementCard.tsx
-- [ ] T055 [US2] Create AchievementList component with filtering in app/components/achievements/AchievementList.tsx
-- [ ] T056 [US2] Create admin achievement management page in app/(dashboard)/admin/achievements/page.tsx
-- [ ] T057 [US2] Add validation for date constraints (end_date > start_date)
-- [ ] T058 [US2] Add validation for positive diamond rewards
+- [x] T046 [P] [US2] Create Achievement TypeScript types in types/achievement.ts
+- [x] T047 [P] [US2] Create achievement status calculation utility in lib/achievements/status.ts
+- [x] T048 [US2] Implement GET /api/achievements endpoint to list all achievements in app/api/achievements/route.ts
+- [x] T049 [US2] Implement POST /api/achievements endpoint for Admin/HR in app/api/achievements/route.ts
+- [x] T050 [US2] Implement GET /api/achievements/[id] endpoint in app/api/achievements/[id]/route.ts
+- [x] T051 [US2] Implement PATCH /api/achievements/[id] endpoint for editing in app/api/achievements/[id]/route.ts
+- [x] T052 [US2] Implement DELETE /api/achievements/[id] endpoint in app/api/achievements/[id]/route.ts
+- [x] T053 [US2] Create AchievementForm component in app/components/achievements/AchievementForm.tsx
+- [x] T054 [US2] Create AchievementCard component with status badges in app/components/achievements/AchievementCard.tsx
+- [x] T055 [US2] Create AchievementList component with filtering in app/components/achievements/AchievementList.tsx
+- [x] T056 [US2] Create admin achievement management page in app/(dashboard)/admin/achievements/page.tsx
+- [x] T057 [US2] Add validation for date constraints (end_date > start_date)
+- [x] T058 [US2] Add validation for positive diamond rewards
 
 **Checkpoint**: At this point, Admin/HR can fully manage achievements, and all users can view them categorized by status (Upcoming, On Doing, Expired)
 
@@ -136,18 +136,18 @@
 
 ### Implementation for User Story 3
 
-- [ ] T059 [P] [US3] Create AchievementProgress TypeScript types in types/achievement.ts
-- [ ] T060 [US3] Implement GET /api/employees/[id]/achievements endpoint to get progress in app/api/employees/[id]/achievements/route.ts
-- [ ] T061 [US3] Implement PATCH /api/achievements/[id]/progress endpoint to update progress in app/api/achievements/[id]/progress/route.ts
-- [ ] T062 [US3] Implement POST /api/achievements/[id]/claim endpoint with transaction in app/api/achievements/[id]/claim/route.ts
-- [ ] T063 [US3] Create atomic transaction for claim (update balance, set claimed, insert history) in lib/achievements/claim.ts
-- [ ] T064 [US3] Create ProgressBar component in app/components/achievements/ProgressBar.tsx
-- [ ] T065 [US3] Create AchievementStatusBadge component (Upcoming, On Doing, Completed) in app/components/achievements/StatusBadge.tsx
-- [ ] T066 [US3] Create ClaimButton component with diamond animation in app/components/achievements/ClaimButton.tsx
-- [ ] T067 [US3] Create achievements tracking page with three sections in app/(dashboard)/achievements/page.tsx
-- [ ] T068 [US3] Add validation to prevent duplicate claims (check status before claim)
-- [ ] T069 [US3] Add validation to prevent expired achievement claims (check end_date)
-- [ ] T070 [US3] Display employee diamond balance prominently on achievements page
+- [x] T059 [P] [US3] Create AchievementProgress TypeScript types in types/achievement.ts
+- [x] T060 [US3] Implement GET /api/employees/[id]/achievements endpoint to get progress in app/api/employees/[id]/achievements/route.ts
+- [x] T061 [US3] Implement PATCH /api/achievements/[id]/progress endpoint to update progress in app/api/achievements/[id]/progress/route.ts
+- [x] T062 [US3] Implement POST /api/achievements/[id]/claim endpoint with transaction in app/api/achievements/[id]/claim/route.ts
+- [x] T063 [US3] Create atomic transaction for claim (update balance, set claimed, insert history) in lib/achievements/claim.ts
+- [x] T064 [US3] Create ProgressBar component in app/components/achievements/ProgressBar.tsx
+- [x] T065 [US3] Create AchievementStatusBadge component (Upcoming, On Doing, Completed) in app/components/achievements/StatusBadge.tsx
+- [x] T066 [US3] Create ClaimButton component with diamond animation in app/components/achievements/ClaimButton.tsx
+- [x] T067 [US3] Create achievements tracking page with three sections in app/(dashboard)/achievements/page.tsx
+- [x] T068 [US3] Add validation to prevent duplicate claims (check status before claim)
+- [x] T069 [US3] Add validation to prevent expired achievement claims (check end_date)
+- [x] T070 [US3] Display employee diamond balance prominently on achievements page
 
 **Checkpoint**: At this point, User Story 3 should work independently - employees can track and claim achievements, and balance updates correctly
 

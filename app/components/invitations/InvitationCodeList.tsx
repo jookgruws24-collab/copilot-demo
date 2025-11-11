@@ -12,7 +12,9 @@ export function InvitationCodeList() {
 
   const fetchCodes = async () => {
     try {
-      const response = await fetch('/api/invitations');
+      const response = await fetch('/api/invitations', {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (!response.ok) {

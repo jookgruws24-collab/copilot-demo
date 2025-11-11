@@ -9,19 +9,31 @@ import type { EmployeePublic } from '@/types/database';
 export default function ProfilePage() {
   const [employee, setEmployee] = useState<EmployeePublic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const response = await fetch('/api/auth/me');
+        console.log('[Profile] Fetching profile from /api/auth/me');
+        const response = await fetch('/api/auth/me', {
+          credentials: 'include',
+        });
         const data = await response.json();
+        
+        console.log('[Profile] Response status:', response.status, 'data:', data);
         
         if (response.ok) {
           setEmployee(data.data);
+          setError(null);
+        } else {
+          const errorMsg = data.error || 'Failed to load profile';
+          console.error('[Profile] Failed to fetch profile:', errorMsg);
+          setError(errorMsg);
         }
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        console.error('[Profile] Failed to fetch profile:', error);
+        setError('Network error: ' + (error instanceof Error ? error.message : 'Unknown error'));
       } finally {
         setLoading(false);
       }
@@ -41,7 +53,18 @@ export default function ProfilePage() {
   if (!employee) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">Failed to load profile</p>
+        <div className="max-w-md mx-auto bg-red-50 border border-red-200 rounded-lg p-6">
+          <h2 className="text-lg font-semibold text-red-900 mb-2">Failed to load profile</h2>
+          {error && (
+            <p className="text-sm text-red-700">{error}</p>
+          )}
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

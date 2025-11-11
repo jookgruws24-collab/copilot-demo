@@ -21,6 +21,7 @@ export function InvitationCodeForm({ onSuccess }: InvitationCodeFormProps) {
       const response = await fetch('/api/invitations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ label: label.trim() || undefined }),
       });
 

@@ -34,6 +34,7 @@ export function ProfileForm({ employee, onSuccess }: ProfileFormProps) {
       const response = await fetch(`/api/employees/${employee.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 

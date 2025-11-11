@@ -17,11 +17,10 @@ An employee needs to register in the system and maintain their profile informati
 
 **Acceptance Scenarios**:
 
-1. **Given** a new employee wants to join the system, **When** they access the registration screen and enter their EmployeeID, name, contact details, address, and an optional invitation code (sent by Admin/HR), **Then** their profile is created, they are assigned the default "User" role, and the invitation code is validated if provided (invalid codes do not block registration)
+1. **Given** a new employee wants to join the system, **When** they access the registration screen and enter their EmployeeID, name, contact details, invitation code, and address, **Then** their profile is created and they are assigned the default "User" role
 2. **Given** an existing employee profile, **When** the employee or Admin/HR edits any profile field (name, contact, address), **Then** the changes are saved and reflected immediately
 3. **Given** an Admin or HR user, **When** they access any employee profile, **Then** they can assign or modify roles (User, Admin, HR) for that employee
 4. **Given** a User role employee, **When** they attempt to access Admin/HR-only features, **Then** they are denied access with an appropriate message
-5. **Given** an Admin or HR user, **When** they generate a new invitation code, **Then** the code is created and can be shared with prospective employees (codes never expire and can be reused)
 
 ---
 
@@ -119,74 +118,67 @@ Employees and administrators need visibility into past activities including achi
 - What happens when an employee is deleted but has history records? (History is anonymized but preserved for audit purposes)
 - How does the system handle negative diamond balances? (Not allowed - purchases are blocked if insufficient balance)
 - What if multiple Admins try to approve the same purchase simultaneously? (First approval wins, others see "Already processed")
-- What happens if an employee registers with an invalid invitation code? (Registration proceeds normally, invalid code is logged for audit)
-- Can an invitation code be deactivated or revoked by Admin/HR? (Codes never expire per requirements, but system could track "active" status for future enhancement)
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 **User Management**
-- **FR-001**: System MUST allow new employees to register with EmployeeID, name, contact details, physical address, and optional invitation code
-- **FR-002**: System MUST allow Admin and HR roles to generate invitation codes that can be shared with prospective employees
-- **FR-003**: System MUST validate invitation codes during registration if provided, but MUST allow registration to proceed even with invalid or missing codes
-- **FR-004**: System MUST track which invitation code was used during registration (if any) for audit purposes
-- **FR-005**: System MUST ensure invitation codes never expire and can be used multiple times
-- **FR-006**: System MUST provide a single-screen interface for viewing and editing all profile information
-- **FR-007**: System MUST support three distinct roles: User (default), Admin, and HR
-- **FR-008**: System MUST allow Admin and HR roles to assign or modify any employee's role
-- **FR-009**: System MUST enforce role-based access control where User role cannot access Admin/HR functions
-- **FR-010**: System MUST validate EmployeeID uniqueness across all registrations
-- **FR-011**: System MUST require all profile fields (EmployeeID, name, contact, address) to be completed
+- **FR-001**: System MUST allow new employees to register with EmployeeID, name, contact details, and physical address
+- **FR-002**: System MUST provide a single-screen interface for viewing and editing all profile information
+- **FR-003**: System MUST support three distinct roles: User (default), Admin, and HR
+- **FR-004**: System MUST allow Admin and HR roles to assign or modify any employee's role
+- **FR-005**: System MUST enforce role-based access control where User role cannot access Admin/HR functions
+- **FR-006**: System MUST validate EmployeeID uniqueness across all registrations
+- **FR-007**: System MUST require all profile fields (EmployeeID, name, contact, address) to be completed
 
 **Achievement System**
-- **FR-012**: System MUST allow Admin and HR roles to create achievements with title, description, conditions, diamond reward amount, start date, and end date
-- **FR-013**: System MUST allow Admin and HR roles to edit or delete achievements
-- **FR-014**: System MUST categorize achievements into three states: Upcoming (before start date), On Doing (active), and Completed (conditions met)
-- **FR-015**: System MUST prevent achievement claims after the end date has passed
-- **FR-016**: System MUST track individual employee progress for each achievement with completion percentage or milestone indicators
-- **FR-017**: System MUST allow employees to claim rewards for completed achievements
-- **FR-018**: System MUST add claimed diamond rewards to the employee's personal Diamond Balance immediately upon claim
-- **FR-019**: System MUST prevent duplicate claims of the same achievement by the same employee
+- **FR-008**: System MUST allow Admin and HR roles to create achievements with title, description, conditions, diamond reward amount, start date, and end date
+- **FR-009**: System MUST allow Admin and HR roles to edit or delete achievements
+- **FR-010**: System MUST categorize achievements into three states: Upcoming (before start date), On Doing (active), and Completed (conditions met)
+- **FR-011**: System MUST prevent achievement claims after the end date has passed
+- **FR-012**: System MUST track individual employee progress for each achievement with completion percentage or milestone indicators
+- **FR-013**: System MUST allow employees to claim rewards for completed achievements
+- **FR-014**: System MUST add claimed diamond rewards to the employee's personal Diamond Balance immediately upon claim
+- **FR-015**: System MUST prevent duplicate claims of the same achievement by the same employee
 
 **Product Store**
-- **FR-020**: System MUST display all available products with diamond prices
-- **FR-021**: System MUST show each employee's current Diamond Balance prominently in the store
-- **FR-022**: System MUST allow employees to purchase products using their diamond balance
-- **FR-023**: System MUST deduct diamond cost from employee balance immediately when purchase is initiated
-- **FR-024**: System MUST set all new purchases to "Pending" status awaiting approval
-- **FR-025**: System MUST prevent purchases when employee's diamond balance is less than product price
-- **FR-026**: System MUST track product inventory and mark items as unavailable when stock reaches zero
+- **FR-016**: System MUST display all available products with diamond prices
+- **FR-017**: System MUST show each employee's current Diamond Balance prominently in the store
+- **FR-018**: System MUST allow employees to purchase products using their diamond balance
+- **FR-019**: System MUST deduct diamond cost from employee balance immediately when purchase is initiated
+- **FR-020**: System MUST set all new purchases to "Pending" status awaiting approval
+- **FR-021**: System MUST prevent purchases when employee's diamond balance is less than product price
+- **FR-022**: System MUST track product inventory and mark items as unavailable when stock reaches zero
 
 **Approval Workflow**
-- **FR-027**: System MUST provide Admin role with access to a purchase approval queue
-- **FR-028**: System MUST allow Admin to approve pending purchases, changing status to "Accepted"
-- **FR-029**: System MUST allow Admin to reject pending purchases with a reason
-- **FR-030**: System MUST refund diamonds to employee's balance when a purchase is rejected
-- **FR-031**: System MUST notify employees when their purchase is approved or rejected
-- **FR-032**: System MUST record the approving Admin's identity and timestamp for audit purposes
-- **FR-033**: System MUST prevent duplicate approvals of the same purchase
+- **FR-023**: System MUST provide Admin role with access to a purchase approval queue
+- **FR-024**: System MUST allow Admin to approve pending purchases, changing status to "Accepted"
+- **FR-025**: System MUST allow Admin to reject pending purchases with a reason
+- **FR-026**: System MUST refund diamonds to employee's balance when a purchase is rejected
+- **FR-027**: System MUST notify employees when their purchase is approved or rejected
+- **FR-028**: System MUST record the approving Admin's identity and timestamp for audit purposes
+- **FR-029**: System MUST prevent duplicate approvals of the same purchase
 
 **History Tracking**
-- **FR-034**: System MUST log all achievement claims with employee, achievement, diamond amount, and timestamp
-- **FR-035**: System MUST log all product purchases with employee, product, diamond cost, status, and timestamps
-- **FR-036**: System MUST allow regular employees to view only their own history
-- **FR-037**: System MUST allow Admin and HR roles to view complete history across all employees
-- **FR-038**: System MUST provide filtering capabilities by date range, employee, activity type, and status for Admin/HR users
-- **FR-039**: System MUST provide search functionality across employee names, achievement names, and product names
-- **FR-040**: System MUST preserve history records even if achievements or products are deleted
-- **FR-041**: System MUST display detailed information for each history entry including all metadata
+- **FR-030**: System MUST log all achievement claims with employee, achievement, diamond amount, and timestamp
+- **FR-031**: System MUST log all product purchases with employee, product, diamond cost, status, and timestamps
+- **FR-032**: System MUST allow regular employees to view only their own history
+- **FR-033**: System MUST allow Admin and HR roles to view complete history across all employees
+- **FR-034**: System MUST provide filtering capabilities by date range, employee, activity type, and status for Admin/HR users
+- **FR-035**: System MUST provide search functionality across employee names, achievement names, and product names
+- **FR-036**: System MUST preserve history records even if achievements or products are deleted
+- **FR-037**: System MUST display detailed information for each history entry including all metadata
 
 **Data Integrity**
-- **FR-042**: System MUST maintain accurate diamond balance calculations at all times
-- **FR-043**: System MUST prevent diamond balance from becoming negative
-- **FR-044**: System MUST ensure all transactions (claims, purchases, refunds) are atomic and consistent
+- **FR-038**: System MUST maintain accurate diamond balance calculations at all times
+- **FR-039**: System MUST prevent diamond balance from becoming negative
+- **FR-040**: System MUST ensure all transactions (claims, purchases, refunds) are atomic and consistent
 
 ### Key Entities
 
-- **Employee**: Represents a registered user with EmployeeID (unique identifier), name, contact details, physical address, assigned role(s), current diamond balance, and optional invitation code used during registration
-- **Invitation Code**: Admin/HR-generated code that can be shared with prospective employees, never expires, tracks usage for audit purposes
-- **Role**: Defines permission levels - User (basic access), Admin (approval authority, full system access, invitation code generation), HR (achievement management, reporting, invitation code generation)
+- **Employee**: Represents a registered user with EmployeeID (unique identifier), name, contact details, physical address, assigned role(s), and current diamond balance
+- **Role**: Defines permission levels - User (basic access), Admin (approval authority, full system access), HR (achievement management, reporting)
 - **Achievement**: Represents a goal or milestone with title, description, completion conditions, diamond reward amount, start date, end date, and status (active/expired)
 - **Achievement Progress**: Tracks an employee's progress toward a specific achievement, including status (Upcoming, On Doing, Completed), completion percentage, and claim status
 - **Diamond Balance**: Employee's current available diamonds for purchases, updated by claims and purchases

@@ -31,6 +31,7 @@ export function RegisterForm() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(formData),
       });
 
@@ -40,7 +41,8 @@ export function RegisterForm() {
         throw new Error(data.error || 'Registration failed');
       }
 
-      // Registration successful, redirect to profile
+      // Registration successful, refresh and redirect to profile
+      router.refresh();
       router.push('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
