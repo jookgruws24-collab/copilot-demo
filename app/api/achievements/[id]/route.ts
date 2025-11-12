@@ -75,7 +75,7 @@ export async function PATCH(
     const validatedData = achievementUpdateSchema.parse(body);
 
     const updates: string[] = [];
-    const values: any[] = [];
+    const values: unknown[] = [];
 
     if (validatedData.title !== undefined) {
       updates.push('title = ?');

@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
     const validatedData = achievementCreateSchema.parse(body);
 
     const result = execute(
-      `INSERT INTO achievements (title, description, conditions, diamond_reward, start_date, end_date)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO achievements (title, description, conditions, diamond_reward, start_date, end_date, created_by)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
         validatedData.title,
         validatedData.description,
@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
         validatedData.diamond_reward,
         validatedData.start_date,
         validatedData.end_date,
+        employee.id,
       ]
     );
 

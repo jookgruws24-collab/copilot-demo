@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 
     // Build WHERE clause
     const conditions: string[] = [];
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     // T104: Role-based filtering - Users see only own history
     if (employee.role === 'user') {

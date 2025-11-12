@@ -232,8 +232,8 @@ export function seedDatabase() {
     ];
 
     const insertAchievement = db.prepare(`
-      INSERT INTO achievements (title, description, conditions, diamond_reward, start_date, end_date)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO achievements (title, description, conditions, diamond_reward, start_date, end_date, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
 
     const achievementIds: number[] = [];
@@ -244,7 +244,8 @@ export function seedDatabase() {
         ach.conditions,
         ach.diamond_reward,
         ach.start_date,
-        ach.end_date
+        ach.end_date,
+        employeeIds[0] // Created by first admin user
       );
       achievementIds.push(result.lastInsertRowid as number);
     });
@@ -259,7 +260,7 @@ export function seedDatabase() {
       // Alice (EMP003) - Various progress states
       { employee_id: employeeIds[2], achievement_id: achievementIds[0], progress: 100, status: 'completed' }, // Ready to claim
       { employee_id: employeeIds[2], achievement_id: achievementIds[1], progress: 75, status: 'on_doing' },
-      { employee_id: employeeIds[2], achievement_id: achievementIds[5], progress: 100, status: 'claimed', claimed_at: addDays(baseDate, -5) }, // Already claimed expired
+      { employee_id: employeeIds[2], achievement_id: achievementIds[5], progress: 100, status: 'claimed', claimed_at: addDays(baseDate, -5).toISOString() }, // Already claimed expired
       
       // Bob (EMP004) - Different progress levels
       { employee_id: employeeIds[3], achievement_id: achievementIds[0], progress: 50, status: 'on_doing' },
@@ -267,7 +268,7 @@ export function seedDatabase() {
       
       // Carol (EMP005) - Just started
       { employee_id: employeeIds[4], achievement_id: achievementIds[0], progress: 10, status: 'on_doing' },
-      { employee_id: employeeIds[4], achievement_id: achievementIds[6], progress: 100, status: 'claimed', claimed_at: addDays(baseDate, -3) }, // Claimed expired
+      { employee_id: employeeIds[4], achievement_id: achievementIds[6], progress: 100, status: 'claimed', claimed_at: addDays(baseDate, -3).toISOString() }, // Claimed expired
       
       // David (EMP006) - No progress yet (new employee)
       
@@ -300,35 +301,35 @@ export function seedDatabase() {
     console.log('  Creating products...');
     const products = [
       // Low-cost items
-      { name: 'Coffee Mug', description: 'Company branded ceramic mug', diamond_price: 25, quantity_available: 100 },
-      { name: 'Sticker Pack', description: 'Set of 10 company logo stickers', diamond_price: 15, quantity_available: 200 },
+      { name: 'Coffee Mug', description: 'Company branded ceramic mug', diamond_price: 25, quantity: 100 },
+      { name: 'Sticker Pack', description: 'Set of 10 company logo stickers', diamond_price: 15, quantity: 200 },
       
       // Medium-cost items
-      { name: 'T-Shirt', description: 'Premium cotton company t-shirt', diamond_price: 50, quantity_available: 75 },
-      { name: 'Water Bottle', description: 'Insulated stainless steel bottle', diamond_price: 75, quantity_available: 50 },
-      { name: 'Wireless Mouse', description: 'Ergonomic wireless mouse', diamond_price: 100, quantity_available: 30 },
+      { name: 'T-Shirt', description: 'Premium cotton company t-shirt', diamond_price: 50, quantity: 75 },
+      { name: 'Water Bottle', description: 'Insulated stainless steel bottle', diamond_price: 75, quantity: 50 },
+      { name: 'Wireless Mouse', description: 'Ergonomic wireless mouse', diamond_price: 100, quantity: 30 },
       
       // High-cost items
-      { name: 'Noise-Cancelling Headphones', description: 'Premium over-ear headphones', diamond_price: 300, quantity_available: 15 },
-      { name: 'Mechanical Keyboard', description: 'RGB mechanical gaming keyboard', diamond_price: 400, quantity_available: 10 },
-      { name: 'Standing Desk Converter', description: 'Adjustable height desk converter', diamond_price: 600, quantity_available: 5 },
+      { name: 'Noise-Cancelling Headphones', description: 'Premium over-ear headphones', diamond_price: 300, quantity: 15 },
+      { name: 'Mechanical Keyboard', description: 'RGB mechanical gaming keyboard', diamond_price: 400, quantity: 10 },
+      { name: 'Standing Desk Converter', description: 'Adjustable height desk converter', diamond_price: 600, quantity: 5 },
       
       // Very high-cost items
-      { name: 'Ergonomic Office Chair', description: 'Premium ergonomic chair', diamond_price: 1000, quantity_available: 3 },
-      { name: 'MacBook Pro', description: '14-inch MacBook Pro', diamond_price: 2000, quantity_available: 2 },
+      { name: 'Ergonomic Office Chair', description: 'Premium ergonomic chair', diamond_price: 1000, quantity: 3 },
+      { name: 'MacBook Pro', description: '14-inch MacBook Pro', diamond_price: 2000, quantity: 2 },
       
       // Limited/out of stock
-      { name: 'Limited Edition Hoodie', description: 'Exclusive company anniversary hoodie', diamond_price: 150, quantity_available: 0 },
+      { name: 'Limited Edition Hoodie', description: 'Exclusive company anniversary hoodie', diamond_price: 150, quantity: 0 },
     ];
 
     const insertProduct = db.prepare(`
-      INSERT INTO products (name, description, diamond_price, quantity_available)
+      INSERT INTO products (name, description, diamond_price, quantity)
       VALUES (?, ?, ?, ?)
     `);
 
     const productIds: number[] = [];
     products.forEach((prod) => {
-      const result = insertProduct.run(prod.name, prod.description, prod.diamond_price, prod.quantity_available);
+      const result = insertProduct.run(prod.name, prod.description, prod.diamond_price, prod.quantity);
       productIds.push(result.lastInsertRowid as number);
     });
 
@@ -344,52 +345,47 @@ export function seedDatabase() {
         employee_id: employeeIds[2], // Alice
         product_id: productIds[4], // Wireless Mouse
         product_name: 'Wireless Mouse',
-        quantity: 1,
         diamond_cost: 100,
         status: 'pending',
-        created_at: addDays(baseDate, -1),
+        created_at: addDays(baseDate, -1).toISOString(),
       },
       {
         employee_id: employeeIds[3], // Bob
         product_id: productIds[2], // T-Shirt
         product_name: 'T-Shirt',
-        quantity: 2,
         diamond_cost: 100,
         status: 'pending',
-        created_at: addDays(baseDate, -2),
+        created_at: addDays(baseDate, -2).toISOString(),
       },
       {
         employee_id: employeeIds[4], // Carol
         product_id: productIds[0], // Coffee Mug
         product_name: 'Coffee Mug',
-        quantity: 1,
         diamond_cost: 25,
         status: 'pending',
-        created_at: addDays(baseDate, 0),
+        created_at: addDays(baseDate, 0).toISOString(),
       },
       
-      // APPROVED purchases
+      // ACCEPTED purchases
       {
         employee_id: employeeIds[2], // Alice
         product_id: productIds[1], // Sticker Pack
         product_name: 'Sticker Pack',
-        quantity: 3,
         diamond_cost: 45,
-        status: 'approved',
-        created_at: addDays(baseDate, -10),
+        status: 'accepted',
+        created_at: addDays(baseDate, -10).toISOString(),
         approved_by: employeeIds[0], // Admin
-        approved_at: addDays(baseDate, -9),
+        approved_at: addDays(baseDate, -9).toISOString(),
       },
       {
         employee_id: employeeIds[3], // Bob
         product_id: productIds[3], // Water Bottle
         product_name: 'Water Bottle',
-        quantity: 1,
         diamond_cost: 75,
-        status: 'approved',
-        created_at: addDays(baseDate, -8),
+        status: 'accepted',
+        created_at: addDays(baseDate, -8).toISOString(),
         approved_by: employeeIds[0], // Admin
-        approved_at: addDays(baseDate, -7),
+        approved_at: addDays(baseDate, -7).toISOString(),
       },
       
       // REJECTED purchases (with reasons and refunds)
@@ -397,31 +393,29 @@ export function seedDatabase() {
         employee_id: employeeIds[6], // Eve
         product_id: productIds[8], // Ergonomic Chair
         product_name: 'Ergonomic Office Chair',
-        quantity: 1,
         diamond_cost: 1000,
         status: 'rejected',
-        created_at: addDays(baseDate, -5),
+        created_at: addDays(baseDate, -5).toISOString(),
         approved_by: employeeIds[0], // Admin
-        approved_at: addDays(baseDate, -4),
+        approved_at: addDays(baseDate, -4).toISOString(),
         rejection_reason: 'Out of budget allocation for this quarter',
       },
       {
         employee_id: employeeIds[4], // Carol
         product_id: productIds[10], // Limited Edition Hoodie
         product_name: 'Limited Edition Hoodie',
-        quantity: 1,
         diamond_cost: 150,
         status: 'rejected',
-        created_at: addDays(baseDate, -6),
+        created_at: addDays(baseDate, -6).toISOString(),
         approved_by: employeeIds[1], // HR
-        approved_at: addDays(baseDate, -5),
+        approved_at: addDays(baseDate, -5).toISOString(),
         rejection_reason: 'Product out of stock',
       },
     ];
 
     const insertPurchase = db.prepare(`
-      INSERT INTO purchases (employee_id, product_id, product_name, quantity, diamond_cost, status, created_at, approved_by, approved_at, rejection_reason)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO purchases (employee_id, product_id, product_name, diamond_cost, status, created_at, approved_by, approved_at, rejection_reason)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     purchases.forEach((purch) => {
@@ -429,7 +423,6 @@ export function seedDatabase() {
         purch.employee_id,
         purch.product_id,
         purch.product_name,
-        purch.quantity,
         purch.diamond_cost,
         purch.status,
         purch.created_at,
@@ -454,7 +447,7 @@ export function seedDatabase() {
         action: 'claimed',
         details: 'Claimed achievement: Year-End Sprint 2024',
         diamonds: 250,
-        created_at: addDays(baseDate, -5),
+        created_at: addDays(baseDate, -5).toISOString(),
       },
       {
         employee_id: employeeIds[4],
@@ -463,7 +456,7 @@ export function seedDatabase() {
         action: 'claimed',
         details: 'Claimed achievement: Customer Satisfaction Award',
         diamonds: 200,
-        created_at: addDays(baseDate, -3),
+        created_at: addDays(baseDate, -3).toISOString(),
       },
       
       // Purchase approvals
@@ -474,7 +467,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 3x Sticker Pack',
         diamonds: -45,
-        created_at: addDays(baseDate, -10),
+        created_at: addDays(baseDate, -10).toISOString(),
       },
       {
         employee_id: employeeIds[2],
@@ -483,7 +476,7 @@ export function seedDatabase() {
         action: 'approved',
         details: 'Purchase approved: 3x Sticker Pack',
         diamonds: 0,
-        created_at: addDays(baseDate, -9),
+        created_at: addDays(baseDate, -9).toISOString(),
       },
       {
         employee_id: employeeIds[3],
@@ -492,7 +485,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 1x Water Bottle',
         diamonds: -75,
-        created_at: addDays(baseDate, -8),
+        created_at: addDays(baseDate, -8).toISOString(),
       },
       {
         employee_id: employeeIds[3],
@@ -501,7 +494,7 @@ export function seedDatabase() {
         action: 'approved',
         details: 'Purchase approved: 1x Water Bottle',
         diamonds: 0,
-        created_at: addDays(baseDate, -7),
+        created_at: addDays(baseDate, -7).toISOString(),
       },
       
       // Purchase rejections (with refunds)
@@ -512,7 +505,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 1x Ergonomic Office Chair',
         diamonds: -1000,
-        created_at: addDays(baseDate, -5),
+        created_at: addDays(baseDate, -5).toISOString(),
       },
       {
         employee_id: employeeIds[6],
@@ -521,7 +514,7 @@ export function seedDatabase() {
         action: 'rejected',
         details: 'Purchase rejected: 1x Ergonomic Office Chair (Refunded 1000💎)',
         diamonds: 1000,
-        created_at: addDays(baseDate, -4),
+        created_at: addDays(baseDate, -4).toISOString(),
       },
       {
         employee_id: employeeIds[4],
@@ -530,7 +523,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 1x Limited Edition Hoodie',
         diamonds: -150,
-        created_at: addDays(baseDate, -6),
+        created_at: addDays(baseDate, -6).toISOString(),
       },
       {
         employee_id: employeeIds[4],
@@ -539,7 +532,7 @@ export function seedDatabase() {
         action: 'rejected',
         details: 'Purchase rejected: 1x Limited Edition Hoodie (Refunded 150💎)',
         diamonds: 150,
-        created_at: addDays(baseDate, -5),
+        created_at: addDays(baseDate, -5).toISOString(),
       },
       
       // Pending purchases (deductions only)
@@ -550,7 +543,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 1x Wireless Mouse (Pending approval)',
         diamonds: -100,
-        created_at: addDays(baseDate, -1),
+        created_at: addDays(baseDate, -1).toISOString(),
       },
       {
         employee_id: employeeIds[3],
@@ -559,7 +552,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 2x T-Shirt (Pending approval)',
         diamonds: -100,
-        created_at: addDays(baseDate, -2),
+        created_at: addDays(baseDate, -2).toISOString(),
       },
       {
         employee_id: employeeIds[4],
@@ -568,7 +561,7 @@ export function seedDatabase() {
         action: 'created',
         details: 'Purchased 1x Coffee Mug (Pending approval)',
         diamonds: -25,
-        created_at: addDays(baseDate, 0),
+        created_at: addDays(baseDate, 0).toISOString(),
       },
     ];
 

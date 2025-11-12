@@ -10,7 +10,7 @@ interface HistoryFiltersProps {
 }
 
 export function HistoryFilters({ filters, onFilterChange, showEmployeeFilter }: HistoryFiltersProps) {
-  const handleChange = (key: keyof Filters, value: any) => {
+  const handleChange = (key: keyof Filters, value: string | number | undefined) => {
     onFilterChange({ ...filters, [key]: value, page: 1 });
   };
 
