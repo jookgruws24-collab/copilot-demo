@@ -4,6 +4,16 @@
 
 The application now automatically initializes the database during the build process. No manual setup is required!
 
+## Default Admin Account
+
+A default admin account is automatically created on first deployment:
+
+- **Email**: `admin@company.com`
+- **Password**: `admin123`
+- **Role**: Administrator
+
+⚠️ **IMPORTANT**: Change this password immediately after first login for security!
+
 ## Build Configuration for Render.com
 
 ### Build Command
@@ -13,7 +23,8 @@ npm run build
 
 This will:
 1. Initialize the database schema (create tables)
-2. Build the Next.js application
+2. Create default admin user
+3. Build the Next.js application
 
 ### Start Command
 ```bash
