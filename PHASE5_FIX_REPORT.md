@@ -12,7 +12,7 @@
    - All three sections visible (Upcoming, On Doing, Completed)
    - Status badges display correctly
    - Diamond balance shown
-   
+
 2. **Test Case 3**: Claim Achievement Rewards - **PASS**
    - Balance updated correctly: 250 💎 → 300 💎 (reward: 50 💎)
    - Achievement claim working as expected
