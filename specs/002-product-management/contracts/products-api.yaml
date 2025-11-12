@@ -1,0 +1,511 @@
+openapi: 3.0.3
+info:
+  title: Product Management API
+  description: Admin-only product CRUD operations for Employee Rewards System
+  version: 1.0.0
+  contact:
+    name: Copilot Demo
+    
+servers:
+  - url: /api
+    description: API base path
+
+security:
+  - sessionCookie: []
+
+tags:
+  - name: Products
+    description: Product management operations (Admin only)
+
+paths:
+  /products:
+    get:
+      tags:
+        - Products
+      summary: List all products
+      description: Get all products with availability and stock status. Accessible by all authenticated users.
+      operationId: listProducts
+      parameters:
+        - name: search
+          in: query
+          description: Search term for product name or description (case-insensitive)
+          required: false
+          schema:
+            type: string
+            example: "coffee"
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          required: false
+          schema:
+            type: string
+            enum: [name, diamond_price, quantity, created_at]
+            default: created_at
+        - name: sort_order
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of items to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: include_archived
+          in: query
+          description: Include archived products (admin only)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductWithAvailability'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+    post:
+      tags:
+        - Products
+      summary: Create new product
+      description: Create a new product in the catalog. Admin role required.
+      operationId: createProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /products/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Product ID
+        schema:
+          type: integer
+          example: 1
+    
+    get:
+      tags:
+        - Products
+      summary: Get single product
+      description: Get product details by ID. Accessible by all authenticated users.
+      operationId: getProduct
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ProductWithMetadata'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+    put:
+      tags:
+        - Products
+      summary: Update product
+      description: Update product details. Admin role required. Cannot reduce quantity below pending purchases.
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Product'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    
+    delete:
+      tags:
+        - Products
+      summary: Delete or archive product
+      description: |
+        Delete product if no purchase history exists (hard delete). 
+        If purchase history exists, archives the product instead (soft delete).
+        Admin role required.
+      operationId: deleteProduct
+      parameters:
+        - name: force_hard_delete
+          in: query
+          description: Force hard delete (will fail if purchases exist)
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Product deleted or archived successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Product archived (purchase history preserved)"
+                  deleted_type:
+                    type: string
+                    enum: [hard_delete, soft_delete]
+                    example: "soft_delete"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session_token
+      description: HTTP-only session cookie for authentication
+
+  schemas:
+    Product:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - diamond_price
+        - quantity
+        - is_archived
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          maxLength: 200
+          example: "Coffee Mug"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Premium ceramic coffee mug with company logo"
+        diamond_price:
+          type: integer
+          minimum: 1
+          example: 25
+          description: "Price in diamonds (virtual currency)"
+        quantity:
+          type: integer
+          minimum: 0
+          example: 50
+          description: "Available stock"
+        image_url:
+          type: string
+          maxLength: 500
+          nullable: true
+          example: "https://cdn.example.com/products/mug.jpg"
+        is_archived:
+          type: integer
+          enum: [0, 1]
+          example: 0
+          description: "0 = active, 1 = archived (soft deleted)"
+        created_at:
+          type: string
+          format: date-time
+          example: "2025-11-12T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2025-11-12T10:30:00Z"
+    
+    ProductCreate:
+      type: object
+      required:
+        - name
+        - description
+        - diamond_price
+        - quantity
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "Coffee Mug"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: "Premium ceramic coffee mug with company logo"
+        diamond_price:
+          type: integer
+          minimum: 1
+          example: 25
+        quantity:
+          type: integer
+          minimum: 0
+          example: 50
+        image_url:
+          type: string
+          format: uri
+          maxLength: 500
+          example: "https://cdn.example.com/products/mug.jpg"
+    
+    ProductUpdate:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: "Coffee Mug - Updated"
+        description:
+          type: string
+          minLength: 1
+          maxLength: 1000
+          example: "Premium ceramic coffee mug - now available in blue"
+        diamond_price:
+          type: integer
+          minimum: 1
+          example: 30
+        quantity:
+          type: integer
+          minimum: 0
+          example: 75
+          description: "Cannot be less than pending purchases count"
+        image_url:
+          type: string
+          format: uri
+          maxLength: 500
+          nullable: true
+          example: "https://cdn.example.com/products/mug-blue.jpg"
+    
+    ProductWithAvailability:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object
+          properties:
+            is_available:
+              type: boolean
+              example: true
+              description: "is_archived = 0 AND quantity > 0"
+            stock_status:
+              type: string
+              enum: [in_stock, low_stock, out_of_stock]
+              example: "in_stock"
+              description: |
+                - out_of_stock: quantity = 0
+                - low_stock: quantity < 10
+                - in_stock: quantity >= 10
+    
+    ProductWithMetadata:
+      allOf:
+        - $ref: '#/components/schemas/ProductWithAvailability'
+        - type: object
+          properties:
+            pending_purchases:
+              type: integer
+              minimum: 0
+              example: 3
+              description: "Count of pending purchase requests for this product"
+            total_purchases:
+              type: integer
+              minimum: 0
+              example: 47
+              description: "Total purchases (all statuses) for this product"
+    
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 156
+        limit:
+          type: integer
+          example: 20
+        offset:
+          type: integer
+          example: 0
+        has_more:
+          type: boolean
+          example: true
+    
+    Error:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "Invalid request"
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            validation_error:
+              value:
+                success: false
+                error: "Validation failed"
+                details:
+                  name: "Name is required"
+                  diamond_price: "Price must be at least 1 diamond"
+    
+    Unauthorized:
+      description: Not authenticated
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: "Not authenticated"
+    
+    Forbidden:
+      description: Insufficient permissions (admin role required)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: "Only admins can manage products"
+    
+    NotFound:
+      description: Product not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: "Product not found"
+    
+    Conflict:
+      description: Operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            quantity_conflict:
+              value:
+                success: false
+                error: "Cannot reduce quantity to 5. There are 8 pending purchases for this product."
+            delete_conflict:
+              value:
+                success: false
+                error: "Cannot hard delete product with purchase history. Use archive instead."
+    
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            success: false
+            error: "Internal server error"
