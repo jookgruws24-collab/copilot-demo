@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Input } from '@/components/ui';
 import type { Product, ProductCreate, ProductUpdate } from '@/types/product';
 
@@ -20,6 +20,19 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Update form data when product prop changes
+  useEffect(() => {
+    if (product) {
+      setFormData({
+        name: product.name || '',
+        description: product.description || '',
+        diamond_price: product.diamond_price || 1,
+        quantity: product.quantity || 0,
+        image_url: product.image_url || '',
+      });
+    }
+  }, [product]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,22 +55,50 @@ export function ProductForm({ product, onSuccess, onCancel }: ProductFormProps) 
         : '/api/products';
       const method = product ? 'PUT' : 'POST';
 
+      // Prepare data - for updates, send all fields; for creates, send all required fields
+      let requestData: any;
+      if (product) {
+        // For updates, send all fields (API will only update what's provided)
+        const imageUrl = formData.image_url ? String(formData.image_url).trim() : '';
+        requestData = {
+          name: String(formData.name || '').trim(),
+          description: String(formData.description || '').trim(),
+          diamond_price: Number(formData.diamond_price) || 1,
+          quantity: Number(formData.quantity) || 0,
+          image_url: imageUrl || null,
+        };
+      } else {
+        // For creates, send all required fields
+        const imageUrl = formData.image_url ? String(formData.image_url).trim() : '';
+        requestData = {
+          name: String(formData.name || '').trim(),
+          description: String(formData.description || '').trim(),
+          diamond_price: Number(formData.diamond_price) || 1,
+          quantity: Number(formData.quantity) || 0,
+          image_url: imageUrl || undefined,
+        };
+      }
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestData),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to save product');
+        const errorMessage = data.error || data.message || `Failed to save product (${response.status})`;
+        console.error('Product save error:', { status: response.status, data });
+        throw new Error(errorMessage);
       }
 
       if (onSuccess) onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save product');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to save product';
+      console.error('Product save exception:', err);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

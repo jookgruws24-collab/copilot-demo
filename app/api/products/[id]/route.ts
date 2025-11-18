@@ -7,9 +7,10 @@ import type { Product } from '@/types/product';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.cookies.get('session_token')?.value;
     if (!token) {
       throw new AuthenticationError('Not authenticated');
@@ -20,7 +21,7 @@ export async function GET(
       throw new AuthenticationError('Invalid or expired session');
     }
 
-    const productId = parseInt(params.id, 10);
+    const productId = parseInt(id, 10);
     if (isNaN(productId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid product ID' },
@@ -64,9 +65,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.cookies.get('session_token')?.value;
     if (!token) {
       throw new AuthenticationError('Not authenticated');
@@ -82,7 +84,7 @@ export async function PUT(
       throw new AuthorizationError('Only admins can update products');
     }
 
-    const productId = parseInt(params.id, 10);
+    const productId = parseInt(id, 10);
     if (isNaN(productId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid product ID' },
@@ -145,7 +147,8 @@ export async function PUT(
     }
     if (validatedData.image_url !== undefined) {
       updates.push('image_url = ?');
-      values.push(validatedData.image_url || null);
+      // Allow empty string to clear the image URL
+      values.push(validatedData.image_url === '' ? null : validatedData.image_url);
     }
 
     if (updates.length === 0) {
@@ -177,9 +180,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const token = request.cookies.get('session_token')?.value;
     if (!token) {
       throw new AuthenticationError('Not authenticated');
@@ -195,7 +199,7 @@ export async function DELETE(
       throw new AuthorizationError('Only admins can delete products');
     }
 
-    const productId = parseInt(params.id, 10);
+    const productId = parseInt(id, 10);
     if (isNaN(productId)) {
       return NextResponse.json(
         { success: false, error: 'Invalid product ID' },
