@@ -25,13 +25,52 @@ export async function GET(request: NextRequest) {
       throw new AuthenticationError('Invalid or expired session');
     }
 
-    // Get all products
-    const products = query<Product>('SELECT * FROM products ORDER BY created_at DESC');
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get('search') || '';
+    const sortBy = searchParams.get('sort_by') || 'created_at';
+    const sortOrder = searchParams.get('sort_order') || 'desc';
+    const limit = parseInt(searchParams.get('limit') || '1000', 10);
+    const offset = parseInt(searchParams.get('offset') || '0', 10);
+    const includeArchived = searchParams.get('include_archived') === 'true';
+
+    // For non-admin users, always exclude archived products
+    const isAdmin = employee.role === 'admin';
+    const showArchived = isAdmin && includeArchived;
+
+    // Build WHERE clause
+    let whereClause = showArchived ? '1=1' : 'is_archived = 0 OR is_archived IS NULL';
+    const queryParams: any[] = [];
+
+    // Add search filter
+    if (search) {
+      whereClause += ` AND (name LIKE ? OR description LIKE ?)`;
+      const searchPattern = `%${search}%`;
+      queryParams.push(searchPattern, searchPattern);
+    }
+
+    // Validate sort_by
+    const validSortFields = ['name', 'diamond_price', 'quantity', 'created_at'];
+    const sortField = validSortFields.includes(sortBy) ? sortBy : 'created_at';
+    const order = sortOrder.toLowerCase() === 'asc' ? 'ASC' : 'DESC';
+
+    // Get total count for pagination
+    const countQuery = `SELECT COUNT(*) as total FROM products WHERE ${whereClause}`;
+    const totalResult = query<{ total: number }>(countQuery, queryParams);
+    const total = totalResult[0]?.total || 0;
+
+    // Get products with pagination
+    const products = query<Product>(
+      `SELECT * FROM products 
+       WHERE ${whereClause} 
+       ORDER BY ${sortField} ${order} 
+       LIMIT ? OFFSET ?`,
+      [...queryParams, limit, offset]
+    );
 
     // Add availability status
     const productsWithAvailability: ProductWithAvailability[] = products.map(product => ({
       ...product,
-      is_available: product.quantity > 0,
+      is_available: (product.is_archived === 0 || product.is_archived === null) && product.quantity > 0,
       stock_status: product.quantity === 0 ? 'out_of_stock' : 
                     product.quantity < 10 ? 'low_stock' : 
                     'in_stock'
@@ -40,6 +79,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: productsWithAvailability,
+      pagination: {
+        total,
+        limit,
+        offset,
+        has_more: offset + limit < total,
+      },
     });
   } catch (error) {
     return handleApiError(error);

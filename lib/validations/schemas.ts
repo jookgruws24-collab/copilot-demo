@@ -134,7 +134,13 @@ export const productUpdateSchema = z.object({
   description: z.string().min(1).optional(),
   diamond_price: z.number().int().positive().optional(),
   quantity: z.number().int().min(0).optional(),
-  image_url: z.string().url().optional(),
+  image_url: z.union([
+    z.string().url(),
+    z.literal(''),
+    z.null(),
+  ]).optional(),
+}).refine(data => Object.keys(data).length > 0, {
+  message: 'At least one field must be updated'
 });
 
 // ============================================================================
