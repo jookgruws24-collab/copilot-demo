@@ -138,16 +138,29 @@ export default function DashboardLayout({
                     </Link>
 
                     {isAdmin && (
-                      <Link
-                        href="/admin/approvals"
-                        className={`inline-flex items-center px-3 py-2 text-sm font-medium ${
-                          isActive('/admin/approvals')
-                            ? 'text-blue-600 border-b-2 border-blue-600'
-                            : 'text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
-                        }`}
-                      >
-                        Approvals
-                      </Link>
+                      <>
+                        <Link
+                          href="/admin/approvals"
+                          className={`inline-flex items-center px-3 py-2 text-sm font-medium ${
+                            isActive('/admin/approvals')
+                              ? 'text-blue-600 border-b-2 border-blue-600'
+                              : 'text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
+                          }`}
+                        >
+                          Approvals
+                        </Link>
+
+                        <Link
+                          href="/admin/products"
+                          className={`inline-flex items-center px-3 py-2 text-sm font-medium ${
+                            pathname?.startsWith('/admin/products')
+                              ? 'text-blue-600 border-b-2 border-blue-600'
+                              : 'text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300'
+                          }`}
+                        >
+                          Products
+                        </Link>
+                      </>
                     )}
 
                     <Link
