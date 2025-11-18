@@ -25,11 +25,16 @@ export function createPurchase(params: CreatePurchaseParams): CreatePurchaseResu
       throw new NotFoundError('Employee not found');
     }
 
-    // 2. Get product and check availability
-    const product = db.prepare('SELECT id, name, diamond_price, quantity FROM products WHERE id = ?').get(productId) as { id: number; name: string; diamond_price: number; quantity: number } | undefined;
+    // 2. Get product and check availability (exclude archived products)
+    const product = db.prepare('SELECT id, name, diamond_price, quantity, is_archived FROM products WHERE id = ?').get(productId) as { id: number; name: string; diamond_price: number; quantity: number; is_archived: number | null } | undefined;
     
     if (!product) {
       throw new NotFoundError('Product not found');
+    }
+
+    // Check if product is archived
+    if (product.is_archived === 1) {
+      throw new ValidationError('This product is no longer available');
     }
 
     if (product.quantity < quantity) {
